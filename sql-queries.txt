@@ -1,0 +1,235 @@
+--Noah Berry | HW3 | using MariaDB | Note: syntax does not require semicolons
+--Q1------------------------------------------------------------------------
+select (city) from offices
+order by city asc
+--A1------------------------------------------------------------------------
+city
+Boston
+London
+NYC
+Paris
+San Francisco
+Sydney
+Tokyo
+--Q2------------------------------------------------------------------------
+select EmployeeNumber, LastName, FirstName, Extension
+from employees
+where officeCode = '4'
+--A2------------------------------------------------------------------------
+EmployeeNumber,LastName,FirstName,Extension
+1102,Bondur,Gerard,x5408
+1337,Bondur,Loui,x6493
+1370,Hernandez,Gerard,x2028
+1401,Castillo,Pamela,x2759
+1702,Gerard,Martin,x2312
+--Q3------------------------------------------------------------------------
+select ProductCode, ProductName, ProductVendor, QuantityInStock, ProductLine
+from products
+where QuantityInStock between 100 and 1000
+--A3------------------------------------------------------------------------
+ProductCode,ProductName,ProductVendor,QuantityInStock,ProductLine
+S18_2248,1911 Ford Town Car,Motor City Art Classics,540,Vintage Cars
+S18_2581,P-51-D Mustang,Gearbox Collectibles,992,Planes
+S18_2795,1928 Mercedes-Benz SSK,Gearbox Collectibles,548,Vintage Cars
+S32_1374,1997 BMW F650 ST,Exoto Designs,178,Motorcycles
+S32_3522,1996 Peterbilt 379 Stake Bed with Outrigger,Red Start Diecast,814,Trucks and Buses
+S32_4289,1928 Ford Phaeton Deluxe,Highway 66 Mini Classics,136,Vintage Cars
+S50_4713,2002 Yamaha YZR M1,Autoart Studio Design,600,Motorcycles
+S700_1938,The Mayflower,Studio M Art Models,737,Ships
+S700_3167,F/A 18 Hornet 1/72,Motor City Art Classics,551,Planes
+S72_3212,Pont Yacht,Unimax Art Galleries,414,Ships
+--Q4------------------------------------------------------------------------
+select ProductCode, ProductName, ProductVendor, QuantityInStock, ProductLine, BuyPrice, MSRP
+from products
+where MSRP = (
+
+select (MSRP)
+from products
+order by MSRP asc
+limit 1
+)
+--A4------------------------------------------------------------------------
+ProductCode,ProductName,ProductVendor,QuantityInStock,ProductLine,BuyPrice,MSRP
+S24_1937,1939 Chevrolet Deluxe Coupe,Motor City Art Classics,7332,Vintage Cars,22.57,33.19
+--Q5------------------------------------------------------------------------
+select ProductName, (MSRP - buyPrice) as Profit
+from products
+order by Profit desc
+limit 1
+--A5------------------------------------------------------------------------
+ProductName,Profit
+1952 Alpine Renault 1300,115.72
+--Q6------------------------------------------------------------------------
+select count(*) as Customers, country
+from customers
+group by country
+having count(*) > 10
+order by Customers desc
+--A6------------------------------------------------------------------------
+Customers,country
+36,USA
+13,Germany
+12,France
+--Q7------------------------------------------------------------------------
+select count(*) as orderCount, productName, p.productCode
+from orderdetails o
+join products p  on o.productCode = p.productCode
+group by o.productCode
+order by (orderCount) desc
+limit 1
+--A7------------------------------------------------------------------------
+orderCount,productName,productCode
+53,1992 Ferrari 360 Spider red,S18_3232
+
+--Q8------------------------------------------------------------------------
+select concat(e.firstName, ' ', e.lastName) as Name, e.reportsTo
+from employees e
+join employees o on e.reportsTo = o.employeeNumber
+where concat(o.firstName, ' ', o.lastName) = 'Diane Murphy'
+or concat(o.firstName, ' ', o.lastName) = 'William Patterson'
+--A8------------------------------------------------------------------------
+Name,reportsTo
+Mary Patterson,1002
+Jeff Firrelli,1002
+Andy Fixter,1088
+Peter Marsh,1088
+Tom King,1088
+--Q9------------------------------------------------------------------------
+select employeeNumber, lastName, firstName
+from employees
+where reportsTo is null
+--A9------------------------------------------------------------------------
+employeeNumber,lastName,firstName
+1002,Murphy,Diane
+--Q10-----------------------------------------------------------------------
+select productName
+from products
+where productLine = 'Classic Cars'
+and cast(productName as int) between 1970 and 1980
+--A10-----------------------------------------------------------------------
+productName
+1972 Alfa Romeo GTA
+1970 Plymouth Hemi Cuda
+1976 Ford Gran Torino
+1970 Triumph Spitfire
+1970 Chevy Chevelle SS 454
+1970 Dodge Coronet
+1971 Alpine Renault 1600s
+
+--Q11-----------------------------------------------------------------------
+select count(*) as NumberofOrders, monthname(orderDate) as Month
+from orders
+where year(orderDate) = 2005
+group by month(orderDate)
+order by count(*) desc
+limit 1
+--A11-----------------------------------------------------------------------
+NumberofOrders,Month
+15,May
+
+--Q12-----------------------------------------------------------------------
+select firstName, lastName
+from employees
+where employeeNumber not in (
+select distinct salesRepEmployeeNumber
+from customers)
+--A12-----------------------------------------------------------------------
+--nothing returned
+--Q13-----------------------------------------------------------------------
+select customerName
+from customers
+where country = 'Germany'
+and customerNumber not in (
+select customerNumber
+from orders
+)
+--A13-----------------------------------------------------------------------
+customerName
+Natürlich Autos
+Messner Shopping Network
+"Franken Gifts, Co"
+Der Hund Imports
+"Cramer Spezialitäten, Ltd"
+Kommission Auto
+Stuttgart Collectable Exchange
+"Feuer Online Stores, Inc"
+Warburg Exchange
+Mit Vergnügen & Co.
+
+--Q14-----------------------------------------------------------------------
+select sum(od.quantityOrdered), c.customerNumber, c.customerName
+from orders o
+join orderdetails od on o.orderNumber = od.ordernumber
+join customers c on o.customerNumber = c.customerNumber
+group by o.customerNumber
+having sum(od.quantityOrdered) > 1700
+order by sum(od.quantityOrdered) desc
+--A14-----------------------------------------------------------------------
+sum(od.quantityOrdered),customerNumber,customerName
+9327,141,Euro+ Shopping Channel
+6366,124,Mini Gifts Distributors Ltd.
+1926,114,"Australian Collectors, Co."
+1832,119,La Rochelle Gifts
+1778,187,"AV Stores, Co."
+1775,151,Muscle Machine Inc
+
+--Q15-----------------------------------------------------------------------
+create table TopCustomers (
+customerNumber int not null,
+contactDate datetime not null,
+orderTotal float(9,2) not null,
+constraint TopCustomers_PK primary key (customerNumber)
+)
+--Q16-----------------------------------------------------------------------
+insert into TopCustomers(
+customerNumber, contactDate, orderTotal
+)(
+select c.customerNumber, curdate(), sum(od.quantityOrdered * od.priceEach)
+from orders o
+join orderdetails od on o.orderNumber = od.ordernumber
+join customers c on o.customerNumber = c.customerNumber
+group by o.customerNumber
+having sum(od.quantityOrdered * od.priceEach) > 140000
+order by sum(od.quantityOrdered * od.priceEach) desc
+limit 10)
+--Q17-----------------------------------------------------------------------
+select *
+from TopCustomers
+order by orderTotal desc
+--A17-----------------------------------------------------------------------
+customerNumber,contactDate,orderTotal
+141,2019-10-16 00:00:00,820689.56
+124,2019-10-16 00:00:00,591827.31
+114,2019-10-16 00:00:00,180585.06
+151,2019-10-16 00:00:00,177913.95
+119,2019-10-16 00:00:00,158573.12
+148,2019-10-16 00:00:00,156251.03
+323,2019-10-16 00:00:00,154622.08
+131,2019-10-16 00:00:00,149085.16
+187,2019-10-16 00:00:00,148410.09
+450,2019-10-16 00:00:00,143536.27
+
+--Q18-----------------------------------------------------------------------
+alter table TopCustomers
+add OrderCount int
+--Q19-----------------------------------------------------------------------
+update TopCustomers
+set OrderCount = floor(rand()*(18+1)-0)
+--Q20-----------------------------------------------------------------------
+select *
+from TopCustomers
+order by OrderCount desc
+--A20-----------------------------------------------------------------------
+customerNumber,contactDate,orderTotal,OrderCount
+119,2019-10-16 00:00:00,158573.12,13
+187,2019-10-16 00:00:00,148410.09,12
+124,2019-10-16 00:00:00,591827.31,8
+114,2019-10-16 00:00:00,180585.06,6
+151,2019-10-16 00:00:00,177913.95,6
+450,2019-10-16 00:00:00,143536.27,5
+141,2019-10-16 00:00:00,820689.56,5
+323,2019-10-16 00:00:00,154622.08,4
+131,2019-10-16 00:00:00,149085.16,2
+148,2019-10-16 00:00:00,156251.03,0
+--Q21-----------------------------------------------------------------------
+drop table TopCustomers

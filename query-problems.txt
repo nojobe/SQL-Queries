@@ -1,0 +1,67 @@
+Query Problems  
+ 
+For this project you must create and execute queries against the ClassicModels database to fulfill the 
+requirements listed below. For each query requirement, as a “hint”, the number of rows to expect in 
+your answer set is listed in parentheses.  
+ 
+1. List  the names of the cities in alphabetical order where Classic Models has offices. (7)  
+ 
+2. List the EmployeeNumber, LastName, FirstName, Extension for all employees working out of the Paris 
+office. (5)  
+ 
+3. List the ProductCode, ProductName, ProductVendor, QuantityInStock and ProductLine for all products 
+with a QuantityInStock between 100 and 1000. (10) 
+
+4. (Use a SUBQUERY) List the ProductCode, ProductName, ProductVendor, BuyPrice and MSRP for the 
+least expensive (lowest MSRP) product sold by ClassicModels. (“MSRP” is the Manufacturer’s Suggested 
+Retail Price.)  (1)    
+
+5. What is the ProductName and Profit of the product that has the highest profit (profit = MSRP minus 
+BuyPrice). (1)   
+
+6. List the country and the number of customers from that country for all countries having more than 
+ten customers.  List the countries sorted in descending order from highest to lowest number of 
+customers. Title the column heading for the count of customers as “Customers”. (3)   
+
+7. List the ProductCode, ProductName, and number of orders for the product with the most orders. Title 
+the column heading for the count of orders as “OrderCount”.  (1)   
+
+8. List the EmployeeNumber, Firstname + Lastname  (concatenated into one column in the answer set, 
+separated by a blank and referred to as ‘name’) for all the employees reporting to Diane Murphy or 
+William Patterson. (5)  
+
+9. List the EmployeeNumber, LastName, FirstName of the president of the company (the one employee with no boss.)  (1) 
+
+10. List the ProductName for all products in the “Classic Cars” product line from the 1970’s.  (7)
+
+11. List the month name and the total number of orders for the month in 2005 in which ClassicModels 
+customers placed the most orders. (1)  
+
+12. List the firstname, lastname of employees who are Sales Reps who have no assigned customers.  (2) 
+
+13. List the customername of customers from Germany with no orders. (10)  
+
+14. List the customername and total quantity of products ordered for customers who have ordered 
+more than 1700 products across all their orders.  (6) 
+
+15. Create a NEW table named “TopCustomers” with three columns: CustomerNumber (integer), 
+ContactDate (DATE) and  OrderTotal (a decimal number with 9 digits in total having two decimal places).  
+None of these columns can be NULL.  Include a PRIMARY KEY constraint named “TopCustomer_PK” on 
+CustomerNumber. (no answer set) 
+ 
+16. Populate the new table “TopCustomers” with the CustomerNumber, today’s date, and the total 
+value of all their orders (PriceEach * quantityOrdered) for those customers whose order total value is
+greater than $140,000. (inserted 10 rows, no answer set)  
+
+ 
+17. List the contents of the TopCustomers table in descending OrderTotal sequence. (10) 
+ 
+18. Add a new column to the TopCustomers table called OrderCount (integer). (No answer set) 
+ 
+19. Update the Top Customers table, setting the OrderCount column to a random number (from 0 to 18). 
+(Should update 10 rows)  HINT:  use the RAND() and FLOOR() functions.  
+ 
+20. List the contents of the TopCustomers table in descending OrderCount sequence. (10) 
+
+ 
+21. Drop the TopCustomers table. (no answer set)
